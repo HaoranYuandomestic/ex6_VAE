@@ -60,39 +60,19 @@
 \newcommand{\labplace}{数学实验中心}
 \newcommand{\experimenttitle}{实验六：基于 VAE 的艺术风格迁移与生成}
 \newcommand{\schoolyear}{2023--2024学年\quad 第二学期}
+\usepackage{fancyhdr}
+
+% 设置 fancyhdr 样式
+\fancypagestyle{plain}{
+	\fancyhf{} % 清除所有预设的页眉和页脚
+	\renewcommand{\headrulewidth}{0pt} % 如果不需要页眉线
+	\renewcommand{\footrulewidth}{0pt} % 如果不需要页脚线
+}
+
+% 应用新的 plain 样式到所有页面
+\pagestyle{plain}
 
 \begin{document}
-
-\begin{titlepage}
-    \centering
-    {\includegraphics[scale=1]{figure1.jpg}}
-    
-    \vspace{1.8cm}
-
-    {\heiti\zihao{-1} 机器学习\par}
-
-    \vspace{2.2cm}
-
-    {\zihao{3} 实验报告\par}
-
-    \vspace{1.8cm}
-
-    {\zihao{4} \schoolyear\par}
-
-    \vspace{1.8cm}
-
-    \renewcommand{\arraystretch}{2.0}
-    \begin{tabular}{>{\raggedleft\arraybackslash}p{7cm} p{9cm}}
-        学\hspace{2em}院： & \schoolname \\
-        班\hspace{2em}级： & \classname \\
-        学\hspace{2em}号： & \studentid \\
-        姓\hspace{2em}名： & \studentname \\
-        指导教师： & \teachername \\
-        实验地点： & \labplace \\
-    \end{tabular}
-
-    \vfill
-\end{titlepage}
 
 \section*{\experimenttitle}
 
@@ -125,10 +105,7 @@ z=\mu+\sigma\odot\varepsilon,\qquad \varepsilon\sim \mathcal{N}(0,I).
 \mathcal{L}=\mathcal{L}_{\text{recon}}+\beta\,\mathcal{L}_{\text{KL}}.
 \]
 其中：
-\begin{align*}
-\mathcal{L}_{\text{recon}} &= \|x-\hat{x}\|_1,\\
-\mathcal{L}_{\text{KL}} &= -\frac{1}{2}\sum_{i=1}^{d}\left(1+\log\sigma_i^2-\mu_i^2-\sigma_i^2\right).
-\end{align*}
+$$\mathcal{L}_{\text{recon}} = \|x-\hat{x}\|_1,\ \mathcal{L}_{\text{KL}} = -\frac{1}{2}\sum_{i=1}^{d}\left(1+\log\sigma_i^2-\mu_i^2-\sigma_i^2\right).$$
 重建损失衡量生成图像与原图之间的差异，KL 散度用于约束潜在分布接近标准正态分布，从而提高生成能力与潜在空间的连续性。训练时引入 $\beta$ 的逐步升温（KL warmup）策略，有助于缓解训练初期图像过度模糊的问题。
 
 \subsection*{3. 风格迁移与潜在空间插值}
@@ -179,7 +156,7 @@ KL warmup 轮数 & 10 \\
 训练阶段将两个域的数据拼接形成联合训练集。每个 batch 输入网络后，先由编码器得到潜在分布参数，再经重参数化得到隐变量，最后结合域标签送入解码器输出重建结果。程序在每个 epoch 后统计训练集与验证集上的总损失、重建损失和 KL 损失，并保存验证集性能最优的模型参数到 \texttt{best\_cvae.pth}。当验证损失连续多轮不再下降时，触发早停，防止模型过拟合。
 
 \section*{五、核心代码说明}
-下面给出与实验最相关的几段代码。
+下面给出与实验最相关的几段代码。The code of the task is available at \footnote{https://github.com/HaoranYuandomestic/ex6\_VAE.git}
 
 \subsection*{1. 数据集读取与预处理}
 \begin{lstlisting}
